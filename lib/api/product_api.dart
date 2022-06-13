@@ -6,6 +6,7 @@ import 'package:eshopping/response/get_product_response.dart';
 import 'package:mime/mime.dart';
 import '../model/product.dart';
 import '../utils/api_url.dart';
+// ignore: depend_on_referenced_packages
 import 'package:http_parser/http_parser.dart';
 
 class ProductAPI {
