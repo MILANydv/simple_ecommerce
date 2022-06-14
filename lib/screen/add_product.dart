@@ -64,6 +64,8 @@ class _AddProductScreenState extends State<AddProductScreen> {
   var numReviewsController = TextEditingController(text: "3");
   var isFeaturedController = TextEditingController(text: "false");
 
+  final _formKey = GlobalKey<FormState>();
+
   String? _dropdownvalue;
   String? _value;
 
@@ -75,152 +77,165 @@ class _AddProductScreenState extends State<AddProductScreen> {
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: SingleChildScrollView(
-            child: Column(
-              children: [
-                _displayImage(),
-                gap,
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    SizedBox(
-                      child: ElevatedButton.icon(
-                        onPressed: () {
-                          _loadImage(ImageSource.camera);
-                        },
-                        icon: const Icon(Icons.camera_enhance),
-                        label: const Text('Open Camera'),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    SizedBox(
-                      child: ElevatedButton.icon(
-                        onPressed: () {
-                          _loadImage(ImageSource.gallery);
-                        },
-                        icon: const Icon(Icons.browse_gallery_sharp),
-                        label: const Text('Open Gallery'),
-                      ),
-                    ),
-                  ],
-                ),
-                gap,
-                TextFormField(
-                  controller: nameController,
-                  decoration: const InputDecoration(
-                    labelText: 'Product Name',
-                    hintText: 'Enter Product Name',
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                TextFormField(
-                  controller: descriptionController,
-                  decoration: const InputDecoration(
-                    labelText: 'Product Description',
-                    hintText: 'Enter Product Description',
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                gap,
-                TextFormField(
-                  keyboardType: TextInputType.number,
-                  controller: priceController,
-                  decoration: const InputDecoration(
-                    labelText: 'Product Price',
-                    hintText: 'Enter Product Price',
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                gap,
-                //DropdownButton
-                FutureBuilder<List<DropdownCategory?>>(
-                  future: CategoryRepository().loadCategory(),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      _dropdownvalue = snapshot.data![0]!.id!;
-
-                      return DropdownButtonFormField(
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          prefixIcon: Icon(Icons.category),
-                          hintText: 'Select Category',
+            child: Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  _displayImage(),
+                  gap,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      SizedBox(
+                        child: ElevatedButton.icon(
+                          onPressed: () {
+                            _loadImage(ImageSource.camera);
+                          },
+                          icon: const Icon(Icons.camera_enhance),
+                          label: const Text('Open Camera'),
                         ),
-                        onChanged: (String? newValue) {
-                          setState(() {
-                            _value = newValue!;
-                          });
-                        },
-                        // Initial Value
-                        value: _dropdownvalue,
-                        // Down Arrow Icon
-                        icon: const Icon(Icons.keyboard_arrow_down),
-                        // Array list of items
-                        items: snapshot.data!.map((DropdownCategory? items) {
-                          return DropdownMenuItem<String>(
-                            value: items!.id!,
-                            child: Text(items.name!),
-                          );
-                        }).toList(),
-                      );
-                    } else if (snapshot.hasError) {
-                      return const Text("Error");
-                    } else {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-                  },
-                ),
-                gap,
-                TextFormField(
-                  keyboardType: TextInputType.number,
-                  controller: countInStockController,
-                  decoration: const InputDecoration(
-                    labelText: 'Count in Stock',
-                    hintText: 'Enter count in stock',
-                    border: OutlineInputBorder(),
+                      ),
+                      const SizedBox(height: 8),
+                      SizedBox(
+                        child: ElevatedButton.icon(
+                          onPressed: () {
+                            _loadImage(ImageSource.gallery);
+                          },
+                          icon: const Icon(Icons.browse_gallery_sharp),
+                          label: const Text('Open Gallery'),
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-                const SizedBox(height: 8),
-                gap,
-                TextFormField(
-                  keyboardType: TextInputType.number,
-                  controller: ratingController,
-                  decoration: const InputDecoration(
-                    labelText: 'Rating',
-                    hintText: 'Enter rating',
-                    border: OutlineInputBorder(),
+                  gap,
+                  TextFormField(
+                    controller: nameController,
+                    decoration: const InputDecoration(
+                      labelText: 'Product Name',
+                      hintText: 'Enter Product Name',
+                      border: OutlineInputBorder(),
+                    ),
                   ),
-                ),
-                gap,
-                TextFormField(
-                  keyboardType: TextInputType.number,
-                  controller: numReviewsController,
-                  decoration: const InputDecoration(
-                    labelText: 'Num reviews',
-                    hintText: 'Enter num reviews',
-                    border: OutlineInputBorder(),
+                  const SizedBox(height: 8),
+                  TextFormField(
+                    controller: descriptionController,
+                    decoration: const InputDecoration(
+                      labelText: 'Product Description',
+                      hintText: 'Enter Product Description',
+                      border: OutlineInputBorder(),
+                    ),
                   ),
-                ),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton.icon(
-                    icon: const Icon(Icons.add),
-                    onPressed: () {
-                      Product product = Product(
-                        name: nameController.text,
-                        description: descriptionController.text,
-                        price: double.parse(priceController.text),
-                        category: _value,
-                        countInStock: int.parse(countInStockController.text),
-                        rating: int.parse(ratingController.text),
-                        numReviews: int.parse(numReviewsController.text),
-                        isFeatured: false,
-                      );
-                      _addProduct(product);
+                  gap,
+                  TextFormField(
+                    keyboardType: TextInputType.number,
+                    controller: priceController,
+                    decoration: const InputDecoration(
+                      labelText: 'Product Price',
+                      hintText: 'Enter Product Price',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  gap,
+                  //DropdownButton
+                  FutureBuilder<List<DropdownCategory?>>(
+                    future: CategoryRepository().loadCategory(),
+                    builder: (context, snapshot) {
+                      // _dropdownvalue = snapshot.data![0]!.id!;
+                      if (snapshot.hasData) {
+                        return DropdownButtonFormField(
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            prefixIcon: Icon(Icons.category),
+                            hintText: 'Select Category',
+                          ),
+                          onChanged: (String? newValue) {
+                            setState(() {
+                              _value = newValue!;
+                            });
+                          },
+                          validator: (String? value) {
+                            if (value == null) {
+                              return 'Please select category';
+                            }
+                            return null;
+                          },
+                          // Initial Value
+                          value: _dropdownvalue,
+                          // Down Arrow Icon
+                          icon: const Icon(Icons.keyboard_arrow_down),
+                          // Array list of items
+                          items: snapshot.data!.map(
+                            (DropdownCategory? items) {
+                              return DropdownMenuItem<String>(
+                                value: items!.id!,
+                                child: Text(items.name!),
+                              );
+                            },
+                          ).toList(),
+                        );
+                      } else if (snapshot.hasError) {
+                        return const Text("Error");
+                      } else {
+                        return const Center(child: CircularProgressIndicator());
+                      }
                     },
-                    label: const Text('Add Product'),
                   ),
-                ),
-              ],
+                  gap,
+                  TextFormField(
+                    keyboardType: TextInputType.number,
+                    controller: countInStockController,
+                    decoration: const InputDecoration(
+                      labelText: 'Count in Stock',
+                      hintText: 'Enter count in stock',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  gap,
+                  TextFormField(
+                    keyboardType: TextInputType.number,
+                    controller: ratingController,
+                    decoration: const InputDecoration(
+                      labelText: 'Rating',
+                      hintText: 'Enter rating',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  gap,
+                  TextFormField(
+                    keyboardType: TextInputType.number,
+                    controller: numReviewsController,
+                    decoration: const InputDecoration(
+                      labelText: 'Num reviews',
+                      hintText: 'Enter num reviews',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      icon: const Icon(Icons.add),
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {
+                          Product product = Product(
+                            name: nameController.text,
+                            description: descriptionController.text,
+                            price: double.parse(priceController.text),
+                            category: _value,
+                            countInStock:
+                                int.parse(countInStockController.text),
+                            rating: int.parse(ratingController.text),
+                            numReviews: int.parse(numReviewsController.text),
+                            isFeatured: false,
+                          );
+                          _addProduct(product);
+                        }
+                      },
+                      label: const Text('Add Product'),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

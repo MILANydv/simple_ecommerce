@@ -35,14 +35,11 @@ class ProductAPI {
         "numReviews": product.numReviews,
         "isFeatured": product.isFeatured,
       });
-      
-      var response = await dio.post(productUrl,
-          data: formData,
-          options: Options(
-            headers: {
-              HttpHeaders.authorizationHeader: "Bearer $token",
-            },
-          ));
+
+      var response = await dio.post(
+        productUrl,
+        data: formData,
+      );
 
       if (response.statusCode == 201) {
         return true;
